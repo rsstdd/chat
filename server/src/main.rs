@@ -27,7 +27,7 @@ fn main() {
             thread::spawn(move || loop {
                 let mut buff = vec![0; MSG_SIZE];
 
-                match socket.read_exact(mut buf) {
+                match socket.read_exact(&mut buff) {
                     Ok(_) => {
                         let msg = buff.into_iter().take_while(|&x| x != 0).collect::<Vec<_>>();
                         let msg = String::from_utf8(msg).expect("Ivalid utf8 message");
@@ -48,10 +48,10 @@ fn main() {
 
         if let Ok(msg) = rx.try_recv() {
             clients = clients.into_iter().filter_map(|mut client| {
-                let mut buf = msg.clone().into_bytes();
+                let mut buff = msg.clone().into_bytes();
                 buff.resize(MSG_SIZE, 0);
 
-                client.write_all(&buf).map(|_| client).ok()
+                client.write_all(&buff).map(|_| client).ok()
             }).collect::<Vec<_>>();
         }
 
